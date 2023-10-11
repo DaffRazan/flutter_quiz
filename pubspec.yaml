@@ -1,0 +1,30 @@
+name: flutter_quiz
+version: 1.0.0+1
+publish_to: none
+description: Flutter Quiz.
+environment: 
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies: 
+  cloud_firestore: ^4.9.3
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.17.0
+  get: 4.6.5
+  google_fonts: ^6.1.0
+  linear_timer: ^2.0.0
+  share_plus: ^7.0.2
+  percent_indicator: ^4.2.3
+  flutter: 
+    sdk: flutter
+
+dev_dependencies: 
+  flutter_lints: ^2.0.0
+  flutter_test: 
+    sdk: flutter
+
+flutter: 
+  uses-material-design: true
+
+  assets:
+  - assets/
+
