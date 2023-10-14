@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quiz/app/modules/home/views/home_view.dart';
+import 'package:flutter_quiz/app/shared/widgets/result_info_widget.dart';
 
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -7,22 +9,36 @@ import 'package:share_plus/share_plus.dart';
 import '../controllers/result_controller.dart';
 
 class ResultView extends GetView<ResultController> {
+  final List<String> userAnswer;
+  final int correctedAnswer;
+  final Map<String, dynamic> quizData;
+
   static const routeName = '/result';
 
-  const ResultView({Key? key}) : super(key: key);
+  const ResultView(this.userAnswer, this.quizData, this.correctedAnswer,
+      {Key? key})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Get.put(ResultController(userAnswer, quizData, correctedAnswer));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Your Score',
           style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Get.off(() => const HomeView());
+          },
+        ),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           CircularPercentIndicator(
@@ -30,27 +46,27 @@ class ResultView extends GetView<ResultController> {
             animation: true,
             animationDuration: 1200,
             lineWidth: 15.0,
-            percent: 0.4,
+            percent: controller.userScorePercent.value,
             center: Text(
-              '4/5',
-              style: TextStyle(
+              '${correctedAnswer.toString()}/${controller.quizData['data'].length.toString()}',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20.0,
                 color: Colors.white,
               ),
             ),
             circularStrokeCap: CircularStrokeCap.butt,
-            backgroundColor: Colors.green,
-            progressColor: Colors.red,
+            backgroundColor: const Color(0xFFF44336),
+            progressColor: const Color(0xFF4CAF50),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          ShareButton(),
-          SizedBox(
+          ShareButton(controller: controller),
+          const SizedBox(
             height: 10,
           ),
-          Text(
+          const Text(
             'Your Report',
             style: TextStyle(
               color: Colors.white,
@@ -58,28 +74,39 @@ class ResultView extends GetView<ResultController> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          ResultInfoWidget(
-            question: 'Who is first president of Indonesia?',
-            correctAnswer: 'Soekarno',
-            userAnswer: 'Soekarno',
-          ),
-          ResultInfoWidget(
-            question: 'Which is king of jungle?',
-            correctAnswer: 'Lion',
-            userAnswer: 'Elephant',
-          ),
+          _buildResultInfoWidget(controller, userAnswer),
         ],
       ),
     );
   }
 }
 
+Widget _buildResultInfoWidget(
+    ResultController controller, List<String> userAnswer) {
+  return SizedBox(
+    height: Get.height * 0.5,
+    child: ListView.builder(
+      itemBuilder: (c, i) {
+        return ResultInfoWidget(
+          question: controller.quizData['data'][i.toString()]['question'],
+          correctAnswer: controller.quizData['data'][i.toString()]['answer'],
+          userAnswer: userAnswer[i],
+        );
+      },
+      itemCount: controller.quizData['data'].length,
+    ),
+  );
+}
+
 class ShareButton extends StatelessWidget {
+  final ResultController controller;
+
   const ShareButton({
     super.key,
+    required this.controller,
   });
 
   @override
@@ -99,7 +126,8 @@ class ShareButton extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        Share.share('Check out my flutter quiz score: 90!');
+        Share.share(
+            'Check out my flutter quiz score: ${controller.userScore}!');
       },
       child: const Text(
         'Share your score',
@@ -107,67 +135,6 @@ class ShareButton extends StatelessWidget {
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
-      ),
-    );
-  }
-}
-
-class ResultInfoWidget extends StatelessWidget {
-  final String question;
-  final String correctAnswer;
-  final String userAnswer;
-
-  const ResultInfoWidget({
-    super.key,
-    required this.question,
-    required this.correctAnswer,
-    required this.userAnswer,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 15,
-        right: 30,
-        left: 30,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            question,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Row(
-            children: [
-              if (correctAnswer != userAnswer) ...[
-                const Icon(
-                  Icons.close,
-                  color: Colors.red,
-                ),
-                Text(
-                  userAnswer,
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-              ],
-              const Icon(
-                Icons.check,
-                color: Colors.green,
-              ),
-              Text(
-                correctAnswer,
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

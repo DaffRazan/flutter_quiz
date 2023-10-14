@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_quiz/app/modules/quiz/views/quiz_view.dart';
+import 'package:flutter_quiz/app/shared/widgets/topic_item.dart';
 
 import 'package:get/get.dart';
 
@@ -7,6 +9,7 @@ import '../controllers/topic_controller.dart';
 class TopicView extends GetView<TopicController> {
   static const routeName = '/topic';
 
+  @override
   final TopicController controller = Get.put(TopicController());
 
   TopicView({Key? key}) : super(key: key);
@@ -19,62 +22,26 @@ class TopicView extends GetView<TopicController> {
         centerTitle: true,
       ),
       body: Obx(
-        () => (controller.topicData.isEmpty)
-            ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: controller.topicData.length,
-                itemBuilder: (context, index) {
-                  final key = controller.topicData.keys.elementAt(index);
-                  final value = controller.topicData[key]['topic'];
+        () =>
+            ((controller.topicData.isEmpty && controller.documentIds.isEmpty) ||
+                    controller.isLoading.value)
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: controller.topicData.length,
+                    itemBuilder: (context, index) {
+                      final key = controller.topicData.keys.elementAt(index);
+                      final value = controller.topicData[key]['topic'];
 
-                  return TopicItem(
-                    title: value.toString(),
-                    onPressed: () {},
-                  );
-                },
-              ),
-      ),
-    );
-  }
-}
+                      final docID = controller.documentIds[index];
 
-class TopicItem extends StatelessWidget {
-  final String title;
-  final VoidCallback onPressed;
-
-  const TopicItem({
-    super.key,
-    required this.title,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 5.0),
-      child: InkWell(
-        onTap: onPressed,
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xff193267),
-          ),
-          child: ListTile(
-            leading: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            trailing: const Icon(
-              Icons.arrow_right,
-              color: Colors.white,
-              size: 30,
-            ),
-          ),
-        ),
+                      return TopicItem(
+                        title: value.toString(),
+                        onPressed: () {
+                          Get.off(() => QuizView(docID));
+                        },
+                      );
+                    },
+                  ),
       ),
     );
   }

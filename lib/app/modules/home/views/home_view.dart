@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quiz/app/modules/quiz/views/quiz_view.dart';
 import 'package:flutter_quiz/app/modules/topic/views/topic_view.dart';
+import 'package:flutter_quiz/app/shared/const.dart';
+import 'package:flutter_quiz/app/shared/widgets/global_functions.dart';
 import 'package:flutter_quiz/app/shared/widgets/rounded_button.dart';
 
 import 'package:get/get.dart';
@@ -14,6 +16,8 @@ class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    Get.put(HomeController());
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -52,11 +56,18 @@ class HomeView extends GetView<HomeController> {
               const SizedBox(
                 height: 50,
               ),
-              RoundedButton(
-                title: 'PLAY',
-                onPressed: () {
-                  Get.toNamed(QuizView.routeName);
-                },
+              Obx(
+                () => (controller.documentIds.isEmpty)
+                    ? const SizedBox()
+                    : RoundedButton(
+                        title: 'PLAY',
+                        onPressed: () {
+                          // get a random doc id from idDocs list
+                          controller.randomizeDocId();
+
+                          Get.to(() => QuizView(controller.randomDocId.value));
+                        },
+                      ),
               ),
               RoundedButton(
                 title: 'TOPICS',
@@ -93,7 +104,9 @@ class HomeView extends GetView<HomeController> {
                       width: 10,
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        launch(dummyPlaystoreLink);
+                      },
                       child: const Row(
                         children: [
                           Icon(

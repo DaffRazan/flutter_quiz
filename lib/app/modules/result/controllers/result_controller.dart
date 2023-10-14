@@ -1,23 +1,23 @@
 import 'package:get/get.dart';
 
 class ResultController extends GetxController {
-  //TODO: Implement ResultController
+  final List<String> userAnswers;
+  final Map<String, dynamic> quizData;
+  final int totalCorrectedAnswer;
 
-  final count = 0.obs;
+  ResultController(this.userAnswers, this.quizData, this.totalCorrectedAnswer);
+
+  var userScore = 0.obs;
+  var userScorePercent = 0.0.obs;
+
   @override
   void onInit() {
     super.onInit();
+    calculateUserScore(totalCorrectedAnswer);
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void calculateUserScore(int score) {
+    userScore(score * 20);
+    userScorePercent(userScore.value / 100);
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

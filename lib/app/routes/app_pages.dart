@@ -19,17 +19,17 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => HomeView(),
+      page: () => const HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
       name: _Paths.RESULT,
-      page: () => ResultView(),
+      page: () => const ResultView([], {}, 0),
       binding: ResultBinding(),
     ),
     GetPage(
       name: _Paths.QUIZ,
-      page: () => QuizView(),
+      page: () => const QuizView(""),
       binding: QuizBinding(),
     ),
     GetPage(
